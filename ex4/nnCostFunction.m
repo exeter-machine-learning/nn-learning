@@ -62,34 +62,6 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-Y = eye(num_labels)(y,:);
-
-% feedforward
-a1 = [ones(m, 1) X];
-a2 = [ones(m, 1) sigmoid(a1 * Theta1')];
-h = sigmoid(a2 * Theta2');
-
-% Util for readability
-tail = @(x) x(:, 2:end);
-
-% Regularized cost function
-p = sum(sum(tail(Theta1) .^ 2, 2)) + sum(sum(tail(Theta2) .^ 2, 2));
-J = sum(sum(-Y .* log(h) - (1-Y) .* log(1-h), 2))/m + lambda*p/(2*m);
-
-% calculate sigmas
-sigma3 = h .- Y;
-sigma2 = tail((sigma3*Theta2) .* sigmoidGradient([ones(m, 1) a1 * Theta1']));
-
-% accumulate gradients
-delta_1 = sigma2' * a1;
-delta_2 = sigma3' * a2;
-
-% calculate regularized gradient
-p = @(x) (lambda/m) * [zeros(rows(x), 1) tail(x)]
-
-Theta1_grad = delta_1./m + p(1);
-Theta2_grad = delta_2./m + p(2);
-
 % -------------------------------------------------------------
 
 % =========================================================================
