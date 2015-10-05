@@ -64,7 +64,7 @@ Theta2_grad = zeros(size(Theta2));
 
 Y = eye(num_labels)(y,:);
 
-% feedforward
+% forward prop
 a1 = [ones(m, 1) X];
 a2 = [ones(m, 1) sigmoid(a1 * Theta1')];
 h = sigmoid(a2 * Theta2');
@@ -74,25 +74,21 @@ tail = @(x) x(:, 2:end);
 sqsum = @(x) sum(sum(x));
 
 % Regularized cost function
-p = sqsum(tail(Theta1) .^ 2) + sqsum(tail(Theta2) .^ 2);
-J = sqsum(-Y .* log(h) - (1-Y) .* log(1-h))/m + lambda*p/(2*m);
+reg = sqsum(tail(Theta1) .^ 2) + sqsum(tail(Theta2) .^ 2);
+J = sqsum(-Y .* log(h) - (1-Y) .* log(1-h))/m + lambda*reg/(2*m);
 
 % calculate sigmas
-sigma3 = h .- Y;
+sigma3 = h - Y;
 sigma2 = tail((sigma3*Theta2) .* sigmoidGradient([ones(m, 1) a1 * Theta1']));
 
 % accumulate gradients
-delta_1 = sigma2' * a1;
-delta_2 = sigma3' * a2;
+delta1 = sigma2' * a1;
+delta2 = sigma3' * a2;
 
 % calculate regularized gradient
 p = @(x) (lambda/m)*[zeros(rows(x), 1) tail(x)];
-
-Theta1_grad = delta_1 ./ m + p(Theta1);
-Theta2_grad = delta_2 ./ m + p(Theta2);
-% -------------------------------------------------------------
-
-% =========================================================================
+Theta1_grad = delta1 / m + p(Theta1);
+Theta2_grad = delta2 / m + p(Theta2);
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
